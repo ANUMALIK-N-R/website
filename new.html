@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIMS Lab | AI for Molecular Sciences</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --white: #ffffff;
+            --off-white: #f8faf9;
+            --mint: #d4efe3;
+            --mint-light: #eaf6f0;
+            --mint-deep: #a8dcc0;
+            --sky: #daeef8;
+            --sky-light: #ecf7fd;
+            --sky-deep: #a3d4eb;
+            --teal: #2a7f6f;
+            --teal-light: #3a9f8a;
+            --navy: #0d2b3e;
+            --slate: #3d5a6e;
+            --text: #1a2e3b;
+            --text-muted: #5a7382;
+            --border: #d0e8dd;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* SCROLL ANIMATIONS */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.75s ease, transform 0.75s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 0.75s ease, transform 0.75s ease;
+        }
+
+        .reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: opacity 0.75s ease, transform 0.75s ease;
+        }
+
+        .reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .stagger-1 {
+            transition-delay: 0.10s;
+        }
+
+        .stagger-2 {
+            transition-delay: 0.20s;
+        }
+
+        .stagger-3 {
+            transition-delay: 0.30s;
+        }
+
+        .stagger-4 {
+            transition-delay: 0.40s;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--border);
+            transition: box-shadow 0.3s;
+        }
+
+        nav.scrolled {
+            box-shadow: 0 4px 28px rgba(42, 127, 111, 0.09);
+        }
+
+        .nav-inner {
+            max-width: 1280px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            height: 84px;
+        }
+
+        .logo-img {
+            height: 80px;
+            width: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 4px;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+
+        .logo-mark {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(140deg, var(--teal) 0%, #1a9e8a 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 6px 20px rgba(42, 127, 111, 0.3);
+            flex-shrink: 0;
+        }
+
+        .logo-mark-ai {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.88);
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .logo-mark-ms {
+            font-family: 'Playfair Display', serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1.5px;
+            line-height: 1;
+            margin-top: 3px;
+        }
+
+        .logo-text-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.1;
+        }
+
+        .logo-title span {
+            color: var(--teal);
+        }
+
+        .logo-subtitle {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 0.2px;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--teal);
+            transform: scaleX(0);
+            transition: transform 0.2s;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover {
+            color: var(--teal);
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-cta {
+            background: var(--teal);
+            color: white !important;
+            padding: 9px 22px;
+            border-radius: 7px;
+            transition: background 0.2s, transform 0.2s !important;
+            box-shadow: 0 2px 10px rgba(42, 127, 111, 0.22);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--teal-light) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        /* HERO */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 84px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 60% at 65% 50%, rgba(212, 239, 227, 0.55) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 15% 80%, rgba(218, 238, 248, 0.4) 0%, transparent 60%),
+                linear-gradient(155deg, #f0faf5 0%, #f8fcfe 55%, #fff 100%);
+        }
+
+        .molecule-grid {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(42, 127, 111, 0.11) 1px, transparent 1px);
+            background-size: 48px 48px;
+            opacity: 0.65;
+        }
+
+        .hero-inner {
+            max-width: 1280px;
+            margin: auto;
+            padding: 0 48px;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--mint);
+            border: 1px solid var(--mint-deep);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--teal);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            animation: fadeUp 0.8s ease both;
+        }
+
+        .hero-badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--teal);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(1.4)
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(22px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(38px, 4.5vw, 62px);
+            font-weight: 700;
+            line-height: 1.11;
+            color: var(--navy);
+            margin-bottom: 22px;
+            animation: fadeUp 0.8s 0.12s ease both;
+        }
+
+        .hero-title em {
+            color: var(--teal);
+            font-style: italic;
+        }
+
+        .hero-subtitle {
+            font-size: 17px;
+            line-height: 1.75;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            animation: fadeUp 0.8s 0.22s ease both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            animation: fadeUp 0.8s 0.32s ease both;
+        }
+
+        .btn-primary {
+            background: var(--teal);
+            color: white;
+            padding: 13px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(42, 127, 111, 0.28);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(42, 127, 111, 0.38);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--teal);
+            padding: 13px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            border: 2px solid var(--mint-deep);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: var(--mint);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 36px;
+            margin-top: 52px;
+            animation: fadeUp 0.8s 0.42s ease both;
+        }
+
+        .hero-stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--teal);
+            line-height: 1;
+        }
+
+        .hero-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+            margin-top: 5px;
+        }
+
+        .hero-visual {
+            animation: fadeUp 0.8s 0.18s ease both;
+        }
+
+        .molecule-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 24px 64px rgba(42, 127, 111, 0.11), 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .molecule-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), #1a9e8a, var(--sky-deep));
+        }
+
+        .molecule-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--teal);
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .mol-svg-wrapper {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .pipeline-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pipe-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: var(--off-white);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .pipe-step-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--teal);
+        }
+
+        .step-done {
+            background: var(--mint);
+        }
+
+        .step-active {
+            background: var(--sky);
+        }
+
+        .step-pending {
+            background: #efefef;
+        }
+
+        .pipe-step-bar {
+            margin-left: auto;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            overflow: hidden;
+            width: 60px;
+        }
+
+        .pipe-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--teal), #1a9e8a);
+        }
+
+        /* SECTIONS */
+        .section {
+            padding: 104px 0;
+            position: relative;
+        }
+
+        .section-inner {
+            max-width: 1280px;
+            margin: auto;
+            padding: 0 48px;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--teal);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3.5vw, 46px);
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.18;
+            margin-bottom: 14px;
+        }
+
+        .section-sub {
+            font-size: 17px;
+            color: var(--text-muted);
+            line-height: 1.75;
+            max-width: 580px;
+        }
+
+        .divider {
+            width: 48px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--sky-deep));
+            border-radius: 2px;
+            margin: 18px 0 40px;
+        }
+
+        /* ABOUT */
+        #about {
+            background: var(--white);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+            margin-top: 60px;
+        }
+
+        .about-text p {
+            font-size: 16px;
+            line-height: 1.85;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .about-text strong {
+            color: var(--text);
+        }
+
+        .about-pillars {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .pillar {
+            background: var(--off-white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+
+        .pillar:hover {
+            border-color: var(--mint-deep);
+            transform: translateY(-3px);
+        }
+
+        .pillar-line {
+            width: 32px;
+            height: 3px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--teal), var(--sky-deep));
+            margin-bottom: 14px;
+        }
+
+        .pillar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 7px;
+        }
+
+        .pillar-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* RESEARCH */
+        #research {
+            background: var(--off-white);
+        }
+
+        #research::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--mint-deep), transparent);
+        }
+
+        .research-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 60px;
+        }
+
+        .research-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border);
+            transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .research-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--sky-deep));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .research-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 52px rgba(42, 127, 111, 0.1);
+            border-color: var(--mint-deep);
+        }
+
+        .research-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .rc-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--mint-deep);
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .rc-icon-bar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--mint-light);
+            border: 1px solid var(--mint-deep);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .rc-icon-bar svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--teal);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .rc-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .rc-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .rc-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .rc-tag {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: var(--mint-light);
+            color: var(--teal);
+            border: 1px solid var(--mint-deep);
+        }
+
+        /* TEAM */
+        #team {
+            background: var(--white);
+        }
+
+        .pi-card {
+            background: linear-gradient(140deg, var(--navy) 0%, #1a4a5e 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .pi-card::after {
+            content: '';
+            position: absolute;
+            right: -60px;
+            top: -60px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(212, 239, 227, 0.05);
+            pointer-events: none;
+        }
+
+        .pi-photo-wrap {
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
+        }
+
+        .pi-photo-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            object-position: center top;
+        }
+
+        .pi-photo-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, transparent 60%, #1a4a5e);
+        }
+
+        .pi-details {
+            padding: 48px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .pi-role {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: var(--mint-deep);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .pi-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .pi-pos {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .pi-bio {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.75;
+            margin-bottom: 24px;
+        }
+
+        .pi-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: white;
+            text-decoration: none;
+            padding: 9px 20px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+            width: fit-content;
+        }
+
+        .pi-link:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+
+        .team-group-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            color: var(--teal);
+            margin-bottom: 20px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .member-list {
+            list-style: none;
+        }
+
+        .member-list li {
+            display: grid;
+            grid-template-columns: 52px 1fr;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .member-list li:last-child {
+            border-bottom: none;
+        }
+
+        .member-photo {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--mint-deep);
+        }
+
+        .member-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .member-role {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* PUBLICATIONS */
+        #publications {
+            background: var(--mint-light);
+            position: relative;
+        }
+
+        #publications::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(218, 238, 248, 0.4) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .pub-highlight {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 60px;
+        }
+
+        .pub-stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 36px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: transform 0.22s, box-shadow 0.22s;
+        }
+
+        .pub-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(42, 127, 111, 0.1);
+        }
+
+        .pub-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 54px;
+            font-weight: 700;
+            color: var(--teal);
+            line-height: 1;
+        }
+
+        .pub-unit {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .pub-cta-row {
+            margin-top: 52px;
+            text-align: center;
+        }
+
+        /* OUTREACH */
+        #outreach {
+            background: var(--white);
+        }
+
+        .outreach-list {
+            margin-top: 60px;
+        }
+
+        .outreach-item {
+            display: grid;
+            grid-template-columns: 52px 1fr;
+            gap: 28px;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: start;
+        }
+
+        .outreach-item:last-child {
+            border-bottom: none;
+        }
+
+        .outreach-index {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            background: var(--mint);
+            border: 1px solid var(--mint-deep);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--teal);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .outreach-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--teal);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .outreach-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .outreach-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* CONTACT */
+        #contact {
+            background: linear-gradient(140deg, var(--navy) 0%, #1a4a5e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #contact::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 80% at 80% 20%, rgba(212, 239, 227, 0.06) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 20% 80%, rgba(218, 238, 248, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        #contact .section-title {
+            color: white;
+        }
+
+        #contact .section-tag {
+            color: var(--mint-deep);
+        }
+
+        #contact .divider {
+            background: linear-gradient(90deg, var(--mint-deep), var(--sky-deep));
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+            margin-top: 60px;
+        }
+
+        .contact-info-text {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.62);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .contact-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.5;
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: rgba(255, 255, 255, 0.7);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .contact-form {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 40px;
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.55);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.28);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--mint-deep);
+        }
+
+        .form-group select option {
+            background: var(--navy);
+            color: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--teal), #1a9e8a);
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            font-family: 'DM Sans', sans-serif;
+            box-shadow: 0 4px 16px rgba(42, 127, 111, 0.3);
+        }
+
+        .form-submit:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        #form-success {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(212, 239, 227, 0.13);
+            border: 1px solid var(--mint-deep);
+            border-radius: 8px;
+            color: var(--mint-deep);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #081c29;
+            padding: 36px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .footer-brand span {
+            color: var(--teal-light);
+        }
+
+        .footer-copy {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.38);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 28px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.48);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--mint-deep);
+        }
+
+        #scroll-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 200;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--teal);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(42, 127, 111, 0.3);
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        #scroll-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #scroll-top:hover {
+            background: var(--teal-light);
+        }
+
+        @media (max-width: 1024px) {
+
+            .hero-inner,
+            .about-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 52px;
+            }
+
+            .research-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .pub-highlight {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pi-card {
+                grid-template-columns: 1fr;
+            }
+
+            .pi-photo-wrap {
+                height: 280px;
+                min-height: unset;
+            }
+
+            .pi-photo-overlay {
+                background: linear-gradient(to top, #1a4a5e 20%, transparent);
+            }
+
+            .hero-visual {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+
+            .research-grid,
+            .pub-highlight {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 64px 0;
+            }
+
+            .section-inner,
+            .nav-inner,
+            footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            footer {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-stats {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav id="main-nav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-logo">
+                <img src="C:\Users\user\Downloads\aims_logo.jpeg" alt="AIMS Lab Logo" class="logo-img">
+                <div class="logo-text-block">
+                    <span class="logo-title">AIMS<span>Lab</span></span>
+                    <span class="logo-subtitle">Digital University Kerala</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#research">Research</a>
+                <a href="#team">Team</a>
+                <a href="#publications">Publications</a>
+                <a href="#outreach">Outreach</a>
+                <a href="#contact" class="nav-cta">Join the Lab</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+        <div class="hero-bg"></div>
+        <div class="molecule-grid"></div>
+        <div class="hero-inner">
+            <div>
+                <div class="hero-badge">
+                    <div class="hero-badge-dot"></div>
+                    School of Digital Sciences
+                </div>
+                <h1 class="hero-title">
+                    Decoding Biology<br>
+                    Through <em>Artificial<br>Intelligence</em>
+                </h1>
+                <p class="hero-subtitle">
+                    AIMS Lab integrates machine learning, computational chemistry, and molecular biology to accelerate
+                    drug discovery, biomarker identification, and the design of next-generation therapeutic compounds.
+                </p>
+                <div class="hero-actions">
+                    <a href="#research" class="btn-primary">Explore Our Research</a>
+                    <a href="#contact" class="btn-outline">Join Our Lab</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">39+</div>
+                        <div class="hero-stat-label">Publications</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">10+</div>
+                        <div class="hero-stat-label">Years of Research</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">5</div>
+                        <div class="hero-stat-label">Research Domains</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="molecule-card">
+                    <span class="molecule-label">// AI_PIPELINE &middot; ACTIVE</span>
+                    <div class="mol-svg-wrapper">
+                        <svg width="240" height="140" viewBox="0 0 240 140" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="120" y1="70" x2="80" y2="40" stroke="#2a7f6f" stroke-width="2.5" opacity="0.6" />
+                            <line x1="120" y1="70" x2="160" y2="40" stroke="#2a7f6f" stroke-width="2.5" opacity="0.6" />
+                            <line x1="120" y1="70" x2="80" y2="100" stroke="#2a7f6f" stroke-width="2.5" opacity="0.6" />
+                            <line x1="120" y1="70" x2="160" y2="100" stroke="#2a7f6f" stroke-width="2.5"
+                                opacity="0.6" />
+                            <line x1="80" y1="40" x2="48" y2="25" stroke="#a3d4eb" stroke-width="2" />
+                            <line x1="160" y1="40" x2="192" y2="25" stroke="#a3d4eb" stroke-width="2" />
+                            <line x1="80" y1="100" x2="48" y2="115" stroke="#a3d4eb" stroke-width="2" />
+                            <line x1="160" y1="100" x2="192" y2="115" stroke="#a3d4eb" stroke-width="2" />
+                            <circle cx="48" cy="25" r="12" fill="#eaf6f0" stroke="#a8dcc0" stroke-width="2" />
+                            <text x="48" y="30" text-anchor="middle" font-size="10" fill="#2a7f6f"
+                                font-family="JetBrains Mono" font-weight="600">N</text>
+                            <circle cx="192" cy="25" r="12" fill="#ecf7fd" stroke="#a3d4eb" stroke-width="2" />
+                            <text x="192" y="30" text-anchor="middle" font-size="10" fill="#3d5a6e"
+                                font-family="JetBrains Mono" font-weight="600">O</text>
+                            <circle cx="48" cy="115" r="12" fill="#ecf7fd" stroke="#a3d4eb" stroke-width="2" />
+                            <text x="48" y="120" text-anchor="middle" font-size="10" fill="#3d5a6e"
+                                font-family="JetBrains Mono" font-weight="600">F</text>
+                            <circle cx="192" cy="115" r="12" fill="#eaf6f0" stroke="#a8dcc0" stroke-width="2" />
+                            <text x="192" y="120" text-anchor="middle" font-size="10" fill="#2a7f6f"
+                                font-family="JetBrains Mono" font-weight="600">N</text>
+                            <circle cx="80" cy="40" r="14" fill="white" stroke="#2a7f6f" stroke-width="2" />
+                            <text x="80" y="45" text-anchor="middle" font-size="11" fill="#2a7f6f"
+                                font-family="JetBrains Mono" font-weight="700">C</text>
+                            <circle cx="160" cy="40" r="14" fill="white" stroke="#2a7f6f" stroke-width="2" />
+                            <text x="160" y="45" text-anchor="middle" font-size="11" fill="#2a7f6f"
+                                font-family="JetBrains Mono" font-weight="700">C</text>
+                            <circle cx="80" cy="100" r="14" fill="white" stroke="#2a7f6f" stroke-width="2" />
+                            <text x="80" y="105" text-anchor="middle" font-size="11" fill="#2a7f6f"
+                                font-family="JetBrains Mono" font-weight="700">C</text>
+                            <circle cx="160" cy="100" r="14" fill="white" stroke="#2a7f6f" stroke-width="2" />
+                            <text x="160" y="105" text-anchor="middle" font-size="11" fill="#2a7f6f"
+                                font-family="JetBrains Mono" font-weight="700">C</text>
+                            <circle cx="120" cy="70" r="18" fill="url(#cg)" />
+                            <text x="120" y="75" text-anchor="middle" font-size="11" fill="white"
+                                font-family="JetBrains Mono" font-weight="700">GNN</text>
+                            <defs>
+                                <radialGradient id="cg" cx="50%" cy="50%">
+                                    <stop offset="0%" stop-color="#3a9f8a" />
+                                    <stop offset="100%" stop-color="#2a7f6f" />
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="pipeline-steps">
+                        <div class="pipe-step">
+                            <div class="pipe-step-icon step-done">01</div>
+                            <span>Molecular Input</span>
+                            <div class="pipe-step-bar">
+                                <div class="pipe-fill" style="width:100%"></div>
+                            </div>
+                        </div>
+                        <div class="pipe-step">
+                            <div class="pipe-step-icon step-active">02</div>
+                            <span>GNN Prediction</span>
+                            <div class="pipe-step-bar">
+                                <div class="pipe-fill" style="width:68%"></div>
+                            </div>
+                        </div>
+                        <div class="pipe-step">
+                            <div class="pipe-step-icon step-pending">03</div>
+                            <span>Drug Candidate</span>
+                            <div class="pipe-step-bar">
+                                <div class="pipe-fill" style="width:28%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="section-tag">// 01 &mdash; About the Lab</div>
+                <h2 class="section-title">At the Frontier of<br>Molecular Intelligence</h2>
+                <div class="divider"></div>
+            </div>
+            <div class="about-grid">
+                <div class="about-text reveal reveal-left">
+                    <p>
+                        The <strong>AIMS Lab</strong> (AI for Molecular Sciences) at Digital University Kerala is an
+                        interdisciplinary research group working at the intersection of artificial intelligence and
+                        chemical biology. We develop and apply computational methods to accelerate molecular design,
+                        drug discovery, and biomarker identification.
+                    </p>
+                    <p>
+                        Our team combines expertise in <strong>synthetic organic chemistry</strong>, deep learning,
+                        bioinformatics, and pharmacology to address complex challenges in human health &mdash; from
+                        multi-target drug design to next-generation theranostic agents.
+                    </p>
+                    <p>
+                        Housed in the School of Digital Sciences, AIMS Lab brings together the quantitative rigour of
+                        data science with the experimental creativity of molecular biology to generate real-world
+                        impact.
+                    </p>
+                    <a href="#contact" class="btn-primary" style="display:inline-block; margin-top:12px;">Work With
+                        Us</a>
+                </div>
+                <div class="about-pillars reveal reveal-right">
+                    <div class="pillar stagger-1">
+                        <div class="pillar-line"></div>
+                        <div class="pillar-title">AI-Driven Molecular Design</div>
+                        <div class="pillar-text">Deep learning models for molecular property prediction, generative
+                            design, and synthesis planning.</div>
+                    </div>
+                    <div class="pillar stagger-2">
+                        <div class="pillar-line"></div>
+                        <div class="pillar-title">Experimental Validation</div>
+                        <div class="pillar-text">Bridging in-silico predictions with wet-lab synthesis to confirm and
+                            iterate on computational findings.</div>
+                    </div>
+                    <div class="pillar stagger-3">
+                        <div class="pillar-line"></div>
+                        <div class="pillar-title">Multi-Omics Integration</div>
+                        <div class="pillar-text">Data fusion across genomics, transcriptomics, and metabolomics for
+                            disease biomarker discovery.</div>
+                    </div>
+                    <div class="pillar stagger-4">
+                        <div class="pillar-line"></div>
+                        <div class="pillar-title">Translational Impact</div>
+                        <div class="pillar-text">From computational insight to viable therapeutic leads with measurable
+                            clinical relevance.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESEARCH -->
+    <section id="research" class="section">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="section-tag">// 02 &mdash; Research Areas</div>
+                <h2 class="section-title">Five Pillars<br>of Discovery</h2>
+                <div class="divider"></div>
+                <p class="section-sub">Our research spans five interconnected domains, united by the common goal of
+                    using AI responsibly and rigorously to advance molecular sciences.</p>
+            </div>
+            <div class="research-grid">
+                <div class="research-card reveal stagger-1">
+                    <div class="rc-num">01</div>
+                    <div class="rc-icon-bar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2a10 10 0 1 0 10 10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                    <div class="rc-title">AI-Driven Molecular Modelling and Synthesis</div>
+                    <div class="rc-text">Generative and predictive AI models to design novel molecular scaffolds,
+                        optimise synthetic routes, and accelerate hit-to-lead campaigns in drug discovery.</div>
+                    <div class="rc-tags"><span class="rc-tag">Deep Learning</span><span class="rc-tag">Generative
+                            AI</span><span class="rc-tag">Retrosynthesis</span></div>
+                </div>
+                <div class="research-card reveal stagger-2">
+                    <div class="rc-num">02</div>
+                    <div class="rc-icon-bar">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+                        </svg>
+                    </div>
+                    <div class="rc-title">Graph Neural Networks for Molecular Property Prediction</div>
+                    <div class="rc-text">GNN architectures to encode molecular graphs and predict ADMET properties,
+                        bioactivity profiles, and toxicity endpoints with high accuracy and interpretability.</div>
+                    <div class="rc-tags"><span class="rc-tag">GNNs</span><span class="rc-tag">ADMET</span><span
+                            class="rc-tag">Cheminformatics</span></div>
+                </div>
+                <div class="research-card reveal stagger-3">
+                    <div class="rc-num">03</div>
+                    <div class="rc-icon-bar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 3H5a2 2 0 0 0-2 2v4" />
+                            <path d="M9 21H5a2 2 0 0 1-2-2v-4" />
+                            <path d="M15 3h4a2 2 0 0 1 2 2v4" />
+                            <path d="M15 21h4a2 2 0 0 0 2-2v-4" />
+                            <rect x="7" y="7" width="10" height="10" rx="1" />
+                        </svg>
+                    </div>
+                    <div class="rc-title">Organo-Fluorophores for Theranostic Applications</div>
+                    <div class="rc-text">Designing and synthesising novel organic fluorescent probes that combine
+                        diagnostic imaging with targeted therapy, enabling simultaneous detection and treatment of
+                        disease.</div>
+                    <div class="rc-tags"><span class="rc-tag">Fluorescence</span><span
+                            class="rc-tag">Theranostics</span><span class="rc-tag">Imaging</span></div>
+                </div>
+                <div class="research-card reveal stagger-1">
+                    <div class="rc-num">04</div>
+                    <div class="rc-icon-bar">
+                        <svg viewBox="0 0 24 24">
+                            <ellipse cx="12" cy="5" rx="9" ry="3" />
+                            <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" />
+                            <path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3" />
+                        </svg>
+                    </div>
+                    <div class="rc-title">OMICS and Integrative Data Analysis for Biomarker Discovery</div>
+                    <div class="rc-text">Integrating genomics, transcriptomics, proteomics, and metabolomics using
+                        machine learning to identify disease biomarkers and novel therapeutic targets.</div>
+                    <div class="rc-tags"><span class="rc-tag">Genomics</span><span class="rc-tag">Proteomics</span><span
+                            class="rc-tag">Biomarkers</span></div>
+                </div>
+                <div class="research-card reveal stagger-2">
+                    <div class="rc-num">05</div>
+                    <div class="rc-icon-bar">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="2" />
+                            <circle cx="5" cy="5" r="2" />
+                            <circle cx="19" cy="5" r="2" />
+                            <circle cx="5" cy="19" r="2" />
+                            <circle cx="19" cy="19" r="2" />
+                            <path d="M7 7l3.5 3.5M17 7l-3.5 3.5M7 17l3.5-3.5M17 17l-3.5-3.5" />
+                        </svg>
+                    </div>
+                    <div class="rc-title">Network Pharmacology for Multi-Target Drug Discovery</div>
+                    <div class="rc-text">Building drug-target interaction networks to identify polypharmacology
+                        opportunities and design multi-target agents for complex, multi-factorial diseases.</div>
+                    <div class="rc-tags"><span class="rc-tag">Network Analysis</span><span
+                            class="rc-tag">Polypharmacology</span><span class="rc-tag">Systems Biology</span></div>
+                </div>
+                <div class="research-card reveal stagger-3"
+                    style="background:linear-gradient(135deg,var(--mint-light),var(--sky-light));border-color:var(--mint-deep);">
+                    <div class="rc-num" style="color:var(--teal)">+</div>
+                    <div class="rc-icon-bar" style="background:var(--white);">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <div class="rc-title">Open to Collaboration</div>
+                    <div class="rc-text">We actively seek academic and industry partnerships. If your research aligns
+                        with our work, we would welcome the opportunity to explore collaborative projects.</div>
+                    <div style="margin-top:24px;">
+                        <a href="#contact" class="btn-outline" style="font-size:13px;padding:10px 20px;">Get in
+                            Touch</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEAM -->
+    <section id="team" class="section">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="section-tag">// 03 &mdash; Our Team</div>
+                <h2 class="section-title">The Scientists<br>Driving the Vision</h2>
+                <div class="divider"></div>
+            </div>
+
+            <div class="pi-card reveal">
+                <div class="pi-photo-wrap">
+                    <img src="C:\Users\user\OneDrive\Pictures\Screenshots\sherin.png"
+                        alt="Dr. Sherin D.R., Principal Investigator"
+                        onerror="this.parentElement.style.background='linear-gradient(135deg,#2a7f6f,#1a4a5e)'" />
+                    <div class="pi-photo-overlay"></div>
+                </div>
+                <div class="pi-details">
+                    <div class="pi-role">Principal Investigator</div>
+                    <div class="pi-name">Dr. Sherin D.R.</div>
+                    <div class="pi-pos">
+                        Assistant Professor, School of Digital Sciences<br>
+                        Digital University Kerala, Thiruvananthapuram
+                    </div>
+                    <div class="pi-bio">
+                        PhD in Synthetic Organic Chemistry with over 10 years of research experience spanning
+                        computational chemistry, AI-driven molecular discovery, and cheminformatics. Dr. Sherin founded
+                        the AIMS Lab with a focus on translating AI innovations into real-world breakthroughs in
+                        molecular sciences and drug discovery.
+                    </div>
+                    <a href="https://duk.ac.in/personnel/sherin-d-r/" target="_blank" class="pi-link">
+                        View Full Profile &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <div class="team-grid">
+                <div class="reveal reveal-left">
+                    <div class="team-group-title">Research Scholars</div>
+                    <ul class="member-list">
+                        <li>
+                            <div class="member-photo">
+                                <img src="https://ui-avatars.com/api/?name=Akhila+A&background=d4efe3&color=2a7f6f&size=104&bold=true"
+                                    alt="Akhila A" />
+                            </div>
+                            <div>
+                                <div class="member-name">Akhila A</div>
+                                <div class="member-role">PhD Research Scholar</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="member-photo">
+                                <img src="https://ui-avatars.com/api/?name=Vaishnavi+A&background=daeef8&color=3d5a6e&size=104&bold=true"
+                                    alt="Vaishnavi A" />
+                            </div>
+                            <div>
+                                <div class="member-name">Vaishnavi A</div>
+                                <div class="member-role">PhD Research Scholar</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="reveal reveal-right">
+                    <div class="team-group-title">Project Staff</div>
+                    <ul class="member-list">
+                        <li>
+                            <div class="member-photo">
+                                <img src="https://ui-avatars.com/api/?name=Saptha+MS&background=d4efe3&color=2a7f6f&size=104&bold=true"
+                                    alt="Saptha MS" />
+                            </div>
+                            <div>
+                                <div class="member-name">Saptha MS</div>
+                                <div class="member-role">Genome Data Analyst</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="member-photo">
+                                <img src="https://ui-avatars.com/api/?name=Aishwarya&background=daeef8&color=3d5a6e&size=104&bold=true"
+                                    alt="Aishwarya" />
+                            </div>
+                            <div>
+                                <div class="member-name">Aishwarya</div>
+                                <div class="member-role">Project Intern</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PUBLICATIONS -->
+    <section id="publications" class="section">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="section-tag">// 04 &mdash; Publications</div>
+                <h2 class="section-title">A Record of<br>Scientific Impact</h2>
+                <div class="divider"></div>
+                <p class="section-sub">Our work appears in peer-reviewed international journals spanning synthetic
+                    chemistry, bioinformatics, and AI-driven drug discovery.</p>
+            </div>
+            <div class="pub-highlight">
+                <div class="pub-stat-card reveal stagger-1">
+                    <div class="pub-num">39</div>
+                    <div class="pub-unit">Research Articles</div>
+                </div>
+                <div class="pub-stat-card reveal stagger-2">
+                    <div class="pub-num">1</div>
+                    <div class="pub-unit">Book Chapter</div>
+                </div>
+                <div class="pub-stat-card reveal stagger-3">
+                    <div class="pub-num">10+</div>
+                    <div class="pub-unit">Years of Active Research</div>
+                </div>
+            </div>
+            <div class="pub-cta-row reveal">
+                <a href="https://scholar.google.com/citations?user=6yurjXoAAAAJ&hl=en" target="_blank"
+                    class="btn-primary">
+                    View Complete Publication List on Google Scholar
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- OUTREACH -->
+    <section id="outreach" class="section">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="section-tag">// 05 &mdash; Outreach</div>
+                <h2 class="section-title">Science Shared,<br>Impact Multiplied</h2>
+                <div class="divider"></div>
+                <p class="section-sub">We are committed to science communication &mdash; sharing our research with
+                    academic communities, students, and institutions through invited talks and workshops.</p>
+            </div>
+            <div class="outreach-list">
+                <div class="outreach-item reveal">
+                    <div class="outreach-index">01</div>
+                    <div>
+                        <div class="outreach-year">2026</div>
+                        <div class="outreach-title">Invited Talk at AICS 2026 &mdash; AI in Chemical Sciences</div>
+                        <div class="outreach-desc">Presented recent advances in AI-driven molecular modelling and
+                            reaction prediction to an international audience of chemists and data scientists at the AI
+                            in Chemical Sciences conference.</div>
+                    </div>
+                </div>
+                <div class="outreach-item reveal">
+                    <div class="outreach-index">02</div>
+                    <div>
+                        <div class="outreach-year">2025</div>
+                        <div class="outreach-title">Workshop on AI and ML for Chemoinformatics &mdash; Farook College
+                        </div>
+                        <div class="outreach-desc">Conducted a hands-on workshop covering machine learning applications
+                            in cheminformatics, molecular descriptors, and structure-activity relationship modelling for
+                            postgraduate students.</div>
+                    </div>
+                </div>
+                <div class="outreach-item reveal">
+                    <div class="outreach-index">03</div>
+                    <div>
+                        <div class="outreach-year">2025</div>
+                        <div class="outreach-title">Guest Lecture on AI in Drug Discovery &mdash; St. Xavier's College
+                        </div>
+                        <div class="outreach-desc">Delivered an invited lecture on the role of artificial intelligence
+                            in accelerating the drug discovery pipeline, from target identification to lead optimisation
+                            and ADMET profiling.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="section-tag">// 06 &mdash; Join Us</div>
+                <h2 class="section-title">Begin Your Journey<br>with AIMS Lab</h2>
+                <div class="divider"></div>
+            </div>
+            <div class="contact-grid">
+                <div class="reveal reveal-left">
+                    <p class="contact-info-text">
+                        We welcome motivated MSc and PhD students, postdoctoral researchers, and project interns with a
+                        passion for AI, chemistry, or bioinformatics. If you are excited about the intersection of
+                        machine learning and molecular sciences, we would love to hear from you.
+                    </p>
+                    <div class="contact-details">
+                        <div class="contact-row">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
+                                </svg>
+                            </div>
+                            <span>sherin.dr@duk.ac.in</span>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.12 6.12l.94-.94a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                            </div>
+                            <span>+91 97462 92885</span>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                            </div>
+                            <span>School of Digital Sciences, Digital University Kerala, Thiruvananthapuram,
+                                Kerala</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form reveal reveal-right">
+                    <div class="form-title">Express Your Interest</div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="f-name" placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="f-email" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Applying As</label>
+                        <select id="f-role">
+                            <option value="">Select a position...</option>
+                            <option>MSc Student</option>
+                            <option>PhD Student</option>
+                            <option>Postdoctoral Researcher</option>
+                            <option>Project Intern</option>
+                            <option>Collaborator / Industry Partner</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Research Interests</label>
+                        <textarea id="f-msg"
+                            placeholder="Tell us about your background and what draws you to our research..."></textarea>
+                    </div>
+                    <button class="form-submit" onclick="submitForm()">Submit Application</button>
+                    <div id="form-success">Application received. We will be in touch soon &mdash; please also follow up
+                        directly at sherin.dr@duk.ac.in</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-brand">AIMS<span>Lab</span></div>
+        <div class="footer-copy">&copy; 2026 AIMS Lab &middot; Digital University Kerala &middot; All rights reserved
+        </div>
+        <div class="footer-links">
+            <a href="https://scholar.google.com/citations?user=6yurjXoAAAAJ&hl=en" target="_blank">Google Scholar</a>
+            <a href="https://duk.ac.in/personnel/sherin-d-r/" target="_blank">DUK Profile</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </footer>
+
+    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+    <script>
+        const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.10 });
+        revealEls.forEach(el => observer.observe(el));
+
+        const nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 40);
+            document.getElementById('scroll-top').classList.toggle('visible', window.scrollY > 400);
+        });
+
+        function submitForm() {
+            const name = document.getElementById('f-name').value.trim();
+            const email = document.getElementById('f-email').value.trim();
+            if (!name || !email) { alert('Please fill in your name and email address.'); return; }
+            document.getElementById('form-success').style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
